@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">YARC</string>
+    <string name="title_activity_configuration">Server Configuration</string>
+
+    <!-- Strings related to server connection -->
+    <string name="ip_address">Server Address</string>
+    <string name="host_port">Server Port</string>
+    <string name="connect">connect</string>
+
+</resources>

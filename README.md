@@ -18,7 +18,7 @@ Make sure you have the following in your system:
 
 Now compile the `mouse_server.c` file:
 ```
-gcc mouse_server.c -lXlib -lXtst -o server
+gcc mouse_server.c -lX11 -lXtst -o server
 ```
 Install the pre-built apk package (or build one yourself) on you connected Android device:
 ```

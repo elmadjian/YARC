@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     public static Client client = null;
     public static SharedPreferences pref;
     public static TextView status;
+    public static Thread thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +137,10 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, Configuration.class);
             startActivity(intent);
         }
+        else if (item.getItemId() == R.id.home) {
+            if (client != null)
+                client.sendMessage("hom\n");
+        }
         else if (item.getItemId() == R.id.keyboard) {
             InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             mgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
@@ -171,7 +176,8 @@ public class MainActivity extends AppCompatActivity {
     public static void connect() {
         System.out.println(hostAddress + "  " + hostPort);
         client = new Client(hostAddress, hostPort);
-        client.execute();
+        thread = new Thread(client);
+        thread.start();
         setStatus();
     }
 

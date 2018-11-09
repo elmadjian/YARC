@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <strings.h>
 #include <string.h>
 #include <X11/Xlib.h>
@@ -15,7 +16,9 @@
 #define SCROLLDOWN_C 7
 #define CHARDOWN_C 8
 #define KEYDOWN_C 9
+#define HOME_C 10
 #define UNKNOWN_C -1
+#define BUFFSIZE 24
 
 
 void move (Display*, int, int);
@@ -25,6 +28,7 @@ void mouseDown(Display*, int);
 void mouseUp(Display*, int);
 void charDown(Display *, char);
 void keyDown(Display*, int);
+void goHome();
 int interpretCommand(char*);
 
 /* global state variables */
@@ -39,7 +43,7 @@ int main() {
     int server_fd, client_fd;
     int optval, read;
     struct sockaddr_in server, client;
-    char buff[1024];
+    char buff[BUFFSIZE];
     char command[3];
     char key;
 
@@ -86,9 +90,9 @@ int main() {
 
         /* client loop */
         while (1) {
-            bzero(buff, 1024);
+            bzero(buff, BUFFSIZE);
             bzero(command, 3);
-            read = recv(client_fd, buff, 1024, 0);
+            read = recv(client_fd, buff, BUFFSIZE, 0);
             if (!read) break;
             if (read < 0) {
                 fprintf(stderr, "Sorry, there is an error with the connection...\n");
@@ -106,6 +110,7 @@ int main() {
                 case SCROLLDOWN_C:  click(display, Button4); break;
                 case CHARDOWN_C:    charDown(display, key); break;
                 case KEYDOWN_C:     keyDown(display, x); break;
+		case HOME_C:        goHome(); break;
                 default: break;
             }
         }
@@ -162,6 +167,13 @@ void charDown(Display *display, char key) {
     keyDown(display, keycode);
 }
 
+/* go to home screen */
+/*********************/
+void goHome() {
+    system("killall chromium");
+    system("chromium --start-fullscreen www.uol.com.br");
+}
+
 /* interpret remote command*/
 /***************************/
 int interpretCommand(char *input) {
@@ -183,5 +195,7 @@ int interpretCommand(char *input) {
         return CHARDOWN_C;
     if ( strcasecmp(input, "key") == 0)
         return KEYDOWN_C;
+    if ( strcasecmp(input, "hom") == 0)
+	return HOME_C;
     return UNKNOWN_C;
 }

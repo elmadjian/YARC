@@ -1,11 +1,16 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="Home Button"
+        app:showAsAction="always" />
     <item
         android:id="@+id/keyboard"
         android:icon="@drawable/ic_keyboard_black_24dp"
-        app:showAsAction="always"
-        android:title="Keyboard Input">
-    </item>
+        android:title="Keyboard Input"
+        app:showAsAction="always"></item>
     <item
         android:id="@+id/config"
         android:icon="@drawable/ic_settings_black_24dp"

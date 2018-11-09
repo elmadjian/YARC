@@ -20,7 +20,7 @@ Now compile the `mouse_server.c` file:
 ```
 gcc mouse_server.c -lX11 -lXtst -o server
 ```
-Install the pre-built apk package (or build one yourself) on you connected Android device:
+Install the pre-built [apk](https://github.com/elmadjian/YARC/releases) package (or build one yourself) on you connected Android device:
 ```
 adb install yarc.apk
 ```

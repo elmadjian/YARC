@@ -4,6 +4,9 @@ import android.os.AsyncTask;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantLock;
@@ -11,36 +14,41 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Client implements Runnable {
 
-    private String serverAddress;
+    private InetAddress serverAddress;
     private int serverPort;
-    private Socket clientSock;
-    private DataOutputStream outToServer;
-    private DataInputStream inFromServer;
+    private DatagramSocket clientSock;
+//    private DataOutputStream outToServer;
+//    private DataInputStream inFromServer;
     private byte[] buffer;
-    private boolean connected;
+    private boolean synced;
     private final Object lock;
 
     Client (String address, int port) {
-        serverAddress = address;
+        try {
+            serverAddress = InetAddress.getByName(address);
+        } catch (Exception e) {
+            System.err.println("Could not get address: " + e.toString());
+            serverAddress = null;
+        }
         serverPort = port;
         lock = new Object();
         clientSock = null;
         buffer = null;
-        connected = false;
+        synced = false;
     }
 
     @Override
     public void run() {
         try {
-            clientSock = new Socket(serverAddress, serverPort);
-            outToServer = new DataOutputStream(clientSock.getOutputStream());
-            inFromServer = new DataInputStream(clientSock.getInputStream());
-            System.out.println("Connected to: " +  serverAddress);
-            connected = true;
+            clientSock = new DatagramSocket();
+//            outToServer = new DataOutputStream(clientSock.getOutputStream());
+//            inFromServer = new DataInputStream(clientSock.getInputStream());
+            System.out.println("Synced with: " +  serverAddress);
+            synced = true;
             MainActivity.setStatus();
         } catch (Exception e) {
-            System.err.println("could not open socket: " + e.toString());
-            connected = false;
+            System.err.println("Could not open socket: " + e.toString());
+            synced = false;
         }
         while (!Thread.currentThread().isInterrupted()) {
             synchronized (lock){
@@ -48,7 +56,9 @@ public class Client implements Runnable {
                     lock.wait();
                     if (buffer != null) {
                         System.out.println("Sending beautiful message: " + buffer.toString());
-                        outToServer.write(buffer);
+                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length,
+                                serverAddress, serverPort);
+                        clientSock.send(packet);
                     }
                 } catch (Exception e) {
                     System.err.println("could not send message to server: " + e.toString());
@@ -75,14 +85,14 @@ public class Client implements Runnable {
             try {
                 lock.notifyAll();
             } catch (Exception e) {
-                System.err.println("error while buffering message");
+                System.err.println("Error while buffering message");
             }
         }
 
     }
 
-    public boolean isConnected() {
-        return connected;
+    public boolean isSynced() {
+        return synced;
     }
 
 }

@@ -3,6 +3,7 @@ package com.elmad.yarc;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,7 +16,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -123,13 +126,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //VOLUME CONTROL
+        final SeekBar seekBar = (SeekBar) findViewById(R.id.volumeSeek);
+        seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+            int progress = seekBar.getProgress();
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progressVal, boolean fromUser) {
+                progress = seekBar.getProgress();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                progress = seekBar.getProgress();
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int progress = seekBar.getProgress();
+                client.sendMessage("vol _ " + progress + "\n");
+            }
+        });
     }
 
+
+    //MENU CONTROLS
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -182,12 +209,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void setStatus() {
-        if (client.isConnected()) {
-            String result = "Connected to: " + hostAddress;
+        if (client.isSynced()) {
+            String result = "Synced to: " + hostAddress;
             status.setText(result);
         }
         else {
-            String result = "Could not connect to: " + hostAddress;
+            String result = "Could not sync to: " + hostAddress;
             status.setText(result);
         }
     }

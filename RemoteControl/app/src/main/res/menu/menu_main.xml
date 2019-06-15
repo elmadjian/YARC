@@ -1,6 +1,7 @@
 <menu xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/home"
         android:icon="@drawable/ic_home_black_24dp"
@@ -10,15 +11,11 @@
         android:id="@+id/keyboard"
         android:icon="@drawable/ic_keyboard_black_24dp"
         android:title="Keyboard Input"
-        app:showAsAction="always"></item>
+        app:showAsAction="always" />
     <item
         android:id="@+id/config"
         android:icon="@drawable/ic_settings_black_24dp"
         app:showAsAction="always"
-        android:title="Server Configuration">
-    </item>
-
-
-
+        android:title="Server Configuration" />
 
 </menu>

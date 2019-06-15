@@ -2,14 +2,9 @@ package com.elmad.yarc;
 
 import android.os.AsyncTask;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.Socket;
-import java.util.Arrays;
-import java.util.concurrent.locks.ReentrantLock;
 
 
 public class Client implements Runnable {
@@ -17,8 +12,6 @@ public class Client implements Runnable {
     private InetAddress serverAddress;
     private int serverPort;
     private DatagramSocket clientSock;
-//    private DataOutputStream outToServer;
-//    private DataInputStream inFromServer;
     private byte[] buffer;
     private boolean synced;
     private final Object lock;
@@ -39,23 +32,27 @@ public class Client implements Runnable {
 
     @Override
     public void run() {
-        try {
-            clientSock = new DatagramSocket();
-//            outToServer = new DataOutputStream(clientSock.getOutputStream());
-//            inFromServer = new DataInputStream(clientSock.getInputStream());
-            System.out.println("Synced with: " +  serverAddress);
-            synced = true;
-            MainActivity.setStatus();
-        } catch (Exception e) {
-            System.err.println("Could not open socket: " + e.toString());
-            synced = false;
+        while (!synced) {
+            try {
+                clientSock = new DatagramSocket();
+                System.out.println("Synced with: " +  serverAddress);
+                synced = true;
+                MainActivity.setStatus();
+            } catch (Exception e) {
+                System.err.println("Could not open socket: " + e.toString());
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                System.err.println("Could not make thread sleep: " + e.toString());
+            }
         }
         while (!Thread.currentThread().isInterrupted()) {
             synchronized (lock){
                 try {
                     lock.wait();
                     if (buffer != null) {
-                        System.out.println("Sending beautiful message: " + buffer.toString());
+                        //System.out.println("Sending beautiful message: " + buffer.toString());
                         DatagramPacket packet = new DatagramPacket(buffer, buffer.length,
                                 serverAddress, serverPort);
                         clientSock.send(packet);
@@ -66,16 +63,6 @@ public class Client implements Runnable {
                 buffer = null;
             }
         }
-//            System.out.println("Waiting for server...");
-//            try {
-//                byte[] buffer = new byte[1024];
-//                while(inFromServer.read(buffer) != -1) {
-//                    System.out.println("Server says: " + Arrays.toString(buffer));
-//                }
-//            } catch (Exception e) {
-//                System.err.println("could not read from server: " + e.toString());
-//            }
-//        }
     }
 
     public void sendMessage(String message) {

@@ -43,8 +43,15 @@ public class MainActivity extends AppCompatActivity {
         //CHECK CONNECTION
         String previousAddress = pref.getString("RCHostAddress", "n/a");
         String previousPort    = pref.getString("RCHostPort", "n/a");
-        if (!(previousAddress.equals("n/a")) && !(previousPort.equals("n/a")))
+        if (!(previousAddress.equals("n/a")) && !(previousPort.equals("n/a"))) {
+            hostAddress = previousAddress;
+            hostPort = Integer.parseInt(previousPort);
             connect();
+        }
+        else {
+            String result = "No previous server found. Please, set up a new connection.";
+            status.setText(result);
+        }
 
 
         //SURFACE CONTROLS
@@ -178,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN && client != null) {
-            System.out.println(event.getKeyCode());
             if (event.isPrintingKey()) {
                 char key = (char) event.getUnicodeChar();
                 client.sendMessage("chr " + key + "\n");
@@ -201,11 +207,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void connect() {
-        System.out.println(hostAddress + "  " + hostPort);
         client = new Client(hostAddress, hostPort);
         thread = new Thread(client);
         thread.start();
-        setStatus();
     }
 
     public static void setStatus() {
@@ -214,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
             status.setText(result);
         }
         else {
-            String result = "Could not sync to: " + hostAddress;
+            String result = "Could not sync to server: " + hostAddress;
             status.setText(result);
         }
     }

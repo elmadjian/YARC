@@ -35,10 +35,6 @@ void goHome();
 void adjustVolume(int);
 int interpretCommand(char*);
 
-/* global state variables */
-/**************************/
-/*bool LFTBUTTON = False;*/
-
 
 /* main program */
 /***************/
@@ -91,7 +87,7 @@ int main() {
             fprintf(stderr, "Sorry, there is an error with the connection...\n");
             break;
         }
-        printf("server received %d bytes: %s\n", read, buff);
+        /*printf("server received %d bytes: %s\n", read, buff);*/
         sscanf(buff, "%s %c %d %d", command, &key, &x, &y);
         switch (interpretCommand(command)) {
             case MOVE_C:        move(display, x, y); break;

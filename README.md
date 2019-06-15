@@ -9,6 +9,8 @@ The YARC Remote Control has the following features:
 * left-button hold / selection
 * right-button hold / selection
 * key input from Android keyboard
+* home button (for [StreamCenter](https://github.com/elmadjian/StreamCenter))
+* pulseaudio-based volume control
 
 ## Installing
 Make sure you have the following in your system:
@@ -16,7 +18,7 @@ Make sure you have the following in your system:
 * Android SDK
 * Android platform and build tools
 
-Now compile the `mouse_server.c` file:
+Now compile the `mouse_server_udp.c` file:
 ```
 gcc mouse_server.c -lX11 -lXtst -o server
 ```

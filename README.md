@@ -10,7 +10,7 @@ The YARC Remote Control has the following features:
 * right-button hold / selection
 * key input from Android keyboard
 * home button (for [StreamCenter](https://github.com/elmadjian/StreamCenter))
-* pulseaudio-based volume control
+* volume control based on pulseaudio-ctl
 
 ## Installing
 Make sure you have the following in your system:

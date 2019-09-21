@@ -2,9 +2,20 @@
     <string name="app_name">YARC</string>
     <string name="title_activity_configuration">Server Configuration</string>
 
-    <!-- Strings related to server connection -->
+    <!-- Strings related to server config -->
     <string name="ip_address">Server Address</string>
     <string name="host_port">Server Port</string>
     <string name="connect">connect</string>
+    <string name="set">set</string>
+    <string name="mac_address">Target MAC Address</string>
+    <string name="conn_settings">Connection Settings</string>
+    <string name="wol_settings">Wake-on-Lan Settgins</string>
+
+    <!-- Menu buttons -->
+    <string name="server_configuration">Server Configuration</string>
+    <string name="keyboard_input">Keyboard Input</string>
+    <string name="home_button">Home Button</string>
+    <string name="power">Power ON/OFF</string>
+
 
 </resources>

@@ -20,6 +20,8 @@
 #define KEYDOWN_C 9
 #define HOME_C 10
 #define VOLUME_C 11
+#define POWEROFF 12
+#define ACK 13
 #define UNKNOWN_C -1
 #define BUFFSIZE 24
 
@@ -33,7 +35,9 @@ void charDown(Display *, char);
 void keyDown(Display*, int);
 void goHome();
 void adjustVolume(int);
+void powerOff();
 int interpretCommand(char*);
+
 
 
 /* main program */
@@ -46,6 +50,7 @@ int main() {
     char buff[BUFFSIZE];
     char command[3];
     char key;
+    char* ack = "ack\n";
 
     /*open display*/
     Display *display = XOpenDisplay(NULL);
@@ -101,6 +106,9 @@ int main() {
             case KEYDOWN_C:     keyDown(display, x); break;
 	    case HOME_C:        goHome(); break;
             case VOLUME_C:      adjustVolume(x); break;
+	    case POWEROFF:      powerOff(); break;
+	    case ACK:           sendto(server_fd, (const char*) ack, strlen(ack), 
+				       MSG_CONFIRM, (struct sockaddr*)&client, client_len); break;	
             default: break;
         }
     }
@@ -169,6 +177,7 @@ void goHome() {
 }
 
 /* adjust system volume */
+/**********************/
 void adjustVolume(int value) {
     pid_t pid;
     pid = fork();
@@ -176,6 +185,17 @@ void adjustVolume(int value) {
 	char buf[22];
 	snprintf(buf, 22, "pulseaudio-ctl set %d", value);
     	system(buf);
+    }
+}
+
+/* turn off your machine */
+/************************/
+void powerOff() {
+    pid_t pid;
+    pid = fork();
+    if (pid == 0) {
+    	system("poweroff");
+	exit(0);
     }
 }
 

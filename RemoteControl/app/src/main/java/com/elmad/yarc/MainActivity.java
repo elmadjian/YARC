@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -154,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 client.sendMessage("vol _ " + progress + "\n");
             }
         });
+
     }
 
 
@@ -172,12 +174,48 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         else if (item.getItemId() == R.id.home) {
-            if (client != null)
+            if (client.isSynced())
                 client.sendMessage("hom\n");
         }
         else if (item.getItemId() == R.id.keyboard) {
             InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             mgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        }
+        else if (item.getItemId() == R.id.power) {
+            //power down routine
+            if (client.isSynced()) {
+                client.sendMessage("ack\n");
+                if (client.isSynced()) {
+                    client.sendMessage("pwr\n");
+                    item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_power_off_24dp));
+                }
+                else {
+                    setStatus();
+                }
+            }
+            //power on
+            else {
+                String previousMAC = pref.getString("RCMACAddress", "n/a");
+                if (!(previousMAC.equals("n/a"))) {
+                    try {
+                        byte[] macBytes = getMacBytes(previousMAC);
+                        byte[] bytes = new byte[6 + 16 * macBytes.length];
+                        for (int i = 0; i < 6; i++)
+                            bytes[i] = (byte) 0xff;
+                        for (int i = 6; i < bytes.length; i += macBytes.length)
+                            System.arraycopy(macBytes, 0, bytes, i, macBytes.length);
+                        client.sendWoL(bytes);
+                        item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_power_on_24dp));
+                    } catch (Exception e) {
+                        String result = "Failed to send Wake-on-Lan packet: " + e.toString();
+                        status.setText(result);
+                    }
+                }
+                else {
+                    String result = "No previous MAC address configured. Please, set up a new one.";
+                    status.setText(result);
+                }
+            }
         }
         return true;
     }
@@ -210,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
         client = new Client(hostAddress, hostPort);
         thread = new Thread(client);
         thread.start();
+        client.sendMessage("ack\n");
     }
 
     public static void setStatus() {
@@ -221,6 +260,23 @@ public class MainActivity extends AppCompatActivity {
             String result = "Could not sync to server: " + hostAddress;
             status.setText(result);
         }
+    }
+
+    //based on http://www.jibble.org/wake-on-lan/
+    public static byte[] getMacBytes(String macString) throws IllegalArgumentException {
+        byte[] bytes = new byte[6];
+        String[] hex = macString.split("(\\:|\\-)");
+        if (hex.length != 6) {
+            throw new IllegalArgumentException("The MAC address you entered is invalid.");
+        }
+        try {
+            for (int i = 0; i < 6; i++) {
+                bytes[i] = (byte) Integer.parseInt(hex[i], 16);
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid hex digit in MAC address.");
+        }
+        return bytes;
     }
 
 }

@@ -15,7 +15,8 @@ import java.net.Socket;
 public class Configuration extends AppCompatActivity {
 
     private AutoCompleteTextView ipAddress;
-    private EditText port;
+    private AutoCompleteTextView port;
+    private AutoCompleteTextView macAddress;
     public Socket clientSock;
 
     @Override
@@ -24,7 +25,8 @@ public class Configuration extends AppCompatActivity {
         setContentView(R.layout.activity_configuration);
 
         ipAddress = (AutoCompleteTextView) findViewById(R.id.host_ip);
-        port = (EditText) findViewById(R.id.host_port);
+        port = (AutoCompleteTextView) findViewById(R.id.host_port);
+        macAddress = (AutoCompleteTextView) findViewById(R.id.mac_address);
 
         String previousAddress = MainActivity.pref.getString("RCHostAddress", "n/a");
         if (!(previousAddress).equals("n/a"))
@@ -33,6 +35,10 @@ public class Configuration extends AppCompatActivity {
         String previousPort = MainActivity.pref.getString("RCHostPort", "n/a");
         if (!(previousPort).equals("n/a"))
             port.setText(previousPort);
+
+        String previousMAC = MainActivity.pref.getString("RCMACAddress", "n/a");
+        if (!(previousMAC).equals("n/a"))
+            macAddress.setText(previousMAC);
 
         Button connButton = (Button) findViewById(R.id.conn_button);
         connButton.setOnClickListener(new OnClickListener() {
@@ -45,6 +51,17 @@ public class Configuration extends AppCompatActivity {
                 edit.putString("RCHostPort", port.getText().toString());
                 edit.apply();
                 MainActivity.connect();
+                Configuration.super.onBackPressed();
+            }
+        });
+
+        Button wolButton = (Button) findViewById(R.id.power_button);
+        wolButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor edit = MainActivity.pref.edit();
+                edit.putString("RCMACAddress", macAddress.getText().toString());
+                edit.apply();
                 Configuration.super.onBackPressed();
             }
         });

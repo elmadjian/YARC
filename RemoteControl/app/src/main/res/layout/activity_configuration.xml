@@ -10,52 +10,90 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.cadu.yarc.Configuration">
 
-    <ScrollView
-        android:id="@+id/server_form"
+    <TextView
+        android:id="@+id/conn_header"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:text="@string/conn_settings"
+        android:textSize="12sp" />
 
-        <LinearLayout
-            android:id="@+id/conn_form"
+    <LinearLayout
+        android:id="@+id/conn_form"
+        android:layout_width="match_parent"
+        android:layout_height="244dp"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <AutoCompleteTextView
-                    android:id="@+id/host_ip"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/ip_address"
-                    android:maxLines="1" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/host_port"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/host_port"
-                    android:maxLines="1" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <Button
-                android:id="@+id/conn_button"
-                style="?android:textAppearanceSmall"
+            <AutoCompleteTextView
+                android:id="@+id/host_ip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/connect"
-                android:textStyle="bold" />
+                android:hint="@string/ip_address"
+                android:maxLines="1" />
 
-        </LinearLayout>
-    </ScrollView>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <AutoCompleteTextView
+                android:id="@+id/host_port"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/host_port" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/conn_button"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/connect"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/power_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/wol_settings"
+        android:textSize="12sp" />
+
+    <LinearLayout
+        android:id="@+id/power_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <AutoCompleteTextView
+                android:id="@+id/mac_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/mac_address" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/power_button"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/set"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
 </LinearLayout>

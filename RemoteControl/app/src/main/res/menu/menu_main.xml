@@ -3,19 +3,26 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/power"
+        android:icon="@drawable/ic_power_off_24dp"
+        android:title="@string/power"
+        app:showAsAction="always"
+        />
+
+    <item
         android:id="@+id/home"
         android:icon="@drawable/ic_home_black_24dp"
-        android:title="Home Button"
+        android:title="@string/home_button"
         app:showAsAction="always" />
     <item
         android:id="@+id/keyboard"
         android:icon="@drawable/ic_keyboard_black_24dp"
-        android:title="Keyboard Input"
+        android:title="@string/keyboard_input"
         app:showAsAction="always" />
     <item
         android:id="@+id/config"
         android:icon="@drawable/ic_settings_black_24dp"
         app:showAsAction="always"
-        android:title="Server Configuration" />
+        android:title="@string/server_configuration" />
 
 </menu>

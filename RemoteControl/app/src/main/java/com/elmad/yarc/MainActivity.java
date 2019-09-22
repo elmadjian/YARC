@@ -156,6 +156,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //ACK TIMER
+        client.startTimer();
+
+
     }
 
 
@@ -184,14 +188,8 @@ public class MainActivity extends AppCompatActivity {
         else if (item.getItemId() == R.id.power) {
             //power down routine
             if (client.isSynced()) {
-                client.sendMessage("ack\n");
-                if (client.isSynced()) {
-                    client.sendMessage("pwr\n");
-                    item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_power_off_24dp));
-                }
-                else {
-                    setStatus();
-                }
+                client.sendMessage("pwr\n");
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_power_off_24dp));
             }
             //power on
             else {

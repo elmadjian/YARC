@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class Client implements Runnable {
@@ -18,6 +20,7 @@ public class Client implements Runnable {
     private boolean ACK;
     private boolean WoL;
     private final Object lock;
+    private Timer timer;
 
     Client (String address, int port) {
         try {
@@ -29,6 +32,7 @@ public class Client implements Runnable {
             System.err.println("Could not get address: " + e.toString());
             serverAddress = null;
         }
+        timer = new Timer();
         serverPort = port;
         lock = new Object();
         clientSock = null;
@@ -108,6 +112,16 @@ public class Client implements Runnable {
 
     public boolean isSynced() {
         return synced;
+    }
+
+    public void startTimer() {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                sendMessage("ack\n");
+                System.out.println("MENSAGEM!");
+            }
+        }, 0, 20*1000);
     }
 
 }

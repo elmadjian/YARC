@@ -37,10 +37,9 @@ First of all, you need the server running on your Linux box:
 ```
 ./server
 ```
-Now, just start the YARC app on your Android device and configure it for the first time, inserting your local Linux box IP and the communication port (the default one is 11111). The next time, it will 
-remember the previous configuration and try to establish a connection automatically (_be sure that both your app and the server are in the **same** local network_).
+Now, just start the YARC app on your Android device and configure it for the first time, inserting your local Linux box IP and the communication port (the default one is 11111). In order to make the power button functional, you also need to provide the MAC address of your WoL-compliant network adapter. The next time, it will remember the previous configuration and try to establish a connection automatically (_be sure that both your app and the server are in the **same** local network_).
 
-If you intend to use the power button, your motherboard must support [Wake-on-Lan](https://en.wikipedia.org/wiki/Wake-on-LAN). Since it is basically a harware matter, I won't provide any instructions here regarding how to make Wake-on-Lan work, but I recommend this [guide](https://wiki.archlinux.org/index.php/Wake-on-LAN) nonetheless.
+If you intend to use the power button, your motherboard must support [Wake-on-Lan](https://en.wikipedia.org/wiki/Wake-on-LAN). Since it is basically a harware matter, I won't provide any instructions here regarding how to make Wake-on-Lan work, but I recommend this [guide](https://wiki.archlinux.org/index.php/Wake-on-LAN). Also, the power button feature is completely optional, YARC doesn't depend on it to work properly. 
 
 **IMPORTANT:** I don't encourage you to use this app with public IP hosts. This was developed for local networks only and there is no security measures (e.g., encryption) against MiM attacks or any other sort of attack. Doing so exposes your machine in a foolish way. You've been warned.
 

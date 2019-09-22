@@ -1,7 +1,7 @@
 # YARC
 YARC is a project with the sole objective of allowing you to remotely control your Linux box with typical pointing device features. It is basically composed of two parts: a server-side script written in C and a remote control app for Android. Here is a screenshot:
 
-![](/home/cadu/Nextcloud/Projects/YARC/screenshot.png)
+![](./screenshot.png)
 
 ## Capabilities
 The YARC Remote Control has the following features:

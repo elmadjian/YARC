@@ -38,6 +38,7 @@ public class Client implements Runnable {
         clientSock = null;
         buffer = null;
         synced = false;
+        ACK = false;
     }
 
     @Override
@@ -64,13 +65,14 @@ public class Client implements Runnable {
                             DatagramPacket packet = new DatagramPacket(buffer, buffer.length,
                                     serverAddress, serverPort);
                             clientSock.send(packet);
+                            if (ACK) {
+                                System.out.println("RECEBENDO_ACK");
+                                clientSock.receive(packet);
+                                System.out.println("ACK_RECEBIDO");
+                                synced = true;
+                                MainActivity.setStatus();
+                            }
                         }
-                    }
-                    if (ACK) {
-                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                        clientSock.receive(packet);
-                        synced = true;
-                        MainActivity.setStatus();
                     }
                 } catch (Exception e) {
                     System.err.println("could not reach server: " + e.toString());
@@ -83,10 +85,11 @@ public class Client implements Runnable {
     }
 
     public void sendMessage(String message) {
-        if (message.equals("ack\n"))
+        if (message.equals("ack\n")) {
             ACK = true;
-        else
+        } else {
             ACK = false;
+        }
         buffer = new byte[24];
         buffer = message.getBytes();
         synchronized (lock) {
@@ -119,7 +122,6 @@ public class Client implements Runnable {
             @Override
             public void run() {
                 sendMessage("ack\n");
-                System.out.println("MENSAGEM!");
             }
         }, 0, 20*1000);
     }

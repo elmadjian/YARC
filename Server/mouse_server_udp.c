@@ -50,7 +50,7 @@ int main() {
     char buff[BUFFSIZE];
     char command[3];
     char key;
-    char* ack = "ack\n";
+    char ack[BUFFSIZE] = "ack\n";
 
     /*open display*/
     Display *display = XOpenDisplay(NULL);
@@ -107,8 +107,8 @@ int main() {
 	    case HOME_C:        goHome(); break;
             case VOLUME_C:      adjustVolume(x); break;
 	    case POWEROFF:      powerOff(); break;
-	    case ACK:           sendto(server_fd, (const char*) ack, strlen(ack), 
-				       MSG_CONFIRM, (struct sockaddr*)&client, client_len); break;	
+	    case ACK:           sendto(server_fd, ack, BUFFSIZE, 0, 
+				       (struct sockaddr*)&client, client_len); break;	
             default: break;
         }
     }
@@ -224,5 +224,9 @@ int interpretCommand(char *input) {
 	return HOME_C;
     if ( strcasecmp(input, "vol") == 0)
 	return VOLUME_C;
+    if ( strcasecmp(input, "pwr") == 0)
+	return POWEROFF;
+    if ( strcasecmp(input, "ack") == 0)
+	return ACK;
     return UNKNOWN_C;
 }

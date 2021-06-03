@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     public static TextView status;
     public static Thread thread;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,18 +107,18 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            if (client != null)
-                                client.sendMessage("lmd\n");
-                            state = true;
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            if (client != null)
-                                client.sendMessage("lmu\n");
-                            state = false;
-                            break;
-                    }
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (client != null)
+                            client.sendMessage("lmd\n");
+                        state = true;
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (client != null)
+                            client.sendMessage("lmu\n");
+                        state = false;
+                        break;
+                }
                 lbutton.setPressed(state);
                 return true;
             }
@@ -155,11 +156,6 @@ public class MainActivity extends AppCompatActivity {
                 client.sendMessage("vol _ " + progress + "\n");
             }
         });
-
-        //ACK TIMER
-        client.startTimer();
-
-
     }
 
 
@@ -178,8 +174,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         else if (item.getItemId() == R.id.home) {
-            if (client.isSynced())
+            if (client.isSynced()) {
                 client.sendMessage("hom\n");
+            }
         }
         else if (item.getItemId() == R.id.keyboard) {
             InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -240,6 +237,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //ACK TIMER
+        client.startTimer();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        client.stopTimer();
     }
 
     public static void connect() {

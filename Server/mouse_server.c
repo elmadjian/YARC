@@ -2,11 +2,9 @@
 #include <stdlib.h>
 #include <strings.h>
 #include <string.h>
-#include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <netinet/in.h>
 
 #define MOVE_C 1
@@ -19,9 +17,6 @@
 #define CHARDOWN_C 8
 #define KEYDOWN_C 9
 #define HOME_C 10
-#define VOLUME_C 11
-#define POWEROFF 12
-#define ACK 13
 #define UNKNOWN_C -1
 #define BUFFSIZE 24
 
@@ -32,12 +27,13 @@ void click(Display*, int);
 void mouseDown(Display*, int);
 void mouseUp(Display*, int);
 void charDown(Display *, char);
-void keyDown(Display*, unsigned);
+void keyDown(Display*, int);
 void goHome();
-void adjustVolume(int);
-void powerOff();
 int interpretCommand(char*);
 
+/* global state variables */
+/**************************/
+/*bool LFTBUTTON = False;*/
 
 
 /* main program */
@@ -50,7 +46,6 @@ int main() {
     char buff[BUFFSIZE];
     char command[3];
     char key;
-    char ack[BUFFSIZE] = "ack\n";
 
     /*open display*/
     Display *display = XOpenDisplay(NULL);
@@ -60,8 +55,8 @@ int main() {
     }
 
     /*create socket*/
-    if ( (server_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-        fprintf(stderr, "Sorry, could not create a server socket :[ \n");
+    if ( (server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        fprintf(stderr, "Sorry, could not create a server socket :[ \n]");
         return -1;
     }
     optval = 1;
@@ -80,36 +75,44 @@ int main() {
         return -1;
     }
 
+    /*listen to client*/
+    if ( listen(server_fd, 10) < 0) {
+        fprintf(stderr, "Sorry, could not listen to client :[ \n");
+        return -1;
+    }
 
-    /*listening remote control app*/
-    socklen_t client_len = sizeof(client);
-    while (1) {
-        bzero(buff, BUFFSIZE);
-        bzero(command, 3);
-        read = recvfrom(server_fd, buff, BUFFSIZE, 0, (struct sockaddr *)&client, &client_len);
-        if (!read) break;
-        if (read < 0) {
-            fprintf(stderr, "Sorry, there is an error with the connection...\n");
-            break;
+    while(1) {
+        socklen_t client_len = sizeof(client);
+        if ( (client_fd = accept(server_fd, (struct sockaddr *)
+            &client, &client_len)) < 0) {
+            fprintf(stderr, "Sorry, could not establish connection :[ \n");
         }
-        /*printf("server received %d bytes: %s\n", read, buff);*/
-        sscanf(buff, "%s %c %d %d", command, &key, &x, &y);
-        switch (interpretCommand(command)) {
-            case MOVE_C:        move(display, x, y); break;
-            case LMOUSEDOWN_C:  mouseDown(display, Button1); break;
-            case LMOUSEUP_C:    mouseUp(display, Button1); break;
-            case LMOUSECLICK_C: click(display, Button1); break;
-            case RMOUSECLICK_C: click(display, Button3); break;
-            case SCROLLUP_C:    click(display, Button5); break;
-            case SCROLLDOWN_C:  click(display, Button4); break;
-            case CHARDOWN_C:    charDown(display, key); break;
-            case KEYDOWN_C:     keyDown(display, (unsigned) x); break;
-	        case HOME_C:        goHome(); break;
-            case VOLUME_C:      adjustVolume(x); break;
-	        case POWEROFF:      powerOff(); break;
-	        case ACK:           sendto(server_fd, ack, BUFFSIZE, 0, 
-				               (struct sockaddr*)&client, client_len); break;	
-            default: break;
+
+        /* client loop */
+        while (1) {
+            bzero(buff, BUFFSIZE);
+            bzero(command, 3);
+            read = recv(client_fd, buff, BUFFSIZE, 0);
+            if (!read) break;
+            if (read < 0) {
+                fprintf(stderr, "Sorry, there is an error with the connection...\n");
+                break;
+            }
+            /*printf("server received %d bytes: %s\n", read, buff);*/
+            sscanf(buff, "%s %c %d %d", command, &key, &x, &y);
+            switch (interpretCommand(command)) {
+                case MOVE_C:        move(display, x, y); break;
+                case LMOUSEDOWN_C:  mouseDown(display, Button1); break;
+                case LMOUSEUP_C:    mouseUp(display, Button1); break;
+                case LMOUSECLICK_C: click(display, Button1); break;
+                case RMOUSECLICK_C: click(display, Button3); break;
+                case SCROLLUP_C:    click(display, Button5); break;
+                case SCROLLDOWN_C:  click(display, Button4); break;
+                case CHARDOWN_C:    charDown(display, key); break;
+                case KEYDOWN_C:     keyDown(display, x); break;
+		case HOME_C:        goHome(); break;
+                default: break;
+            }
         }
     }
 
@@ -150,7 +153,7 @@ void mouseUp(Display *display, int button) {
 
 /* simulates a key press event */
 /*******************************/
-void keyDown(Display *display, unsigned keycode) {
+void keyDown(Display *display, int keycode) {
     XTestFakeKeyEvent(display, keycode, True, CurrentTime);
     XTestFakeKeyEvent(display, keycode, False, CurrentTime);
     XFlush(display);
@@ -159,45 +162,16 @@ void keyDown(Display *display, unsigned keycode) {
 /* simulates a string input */
 /****************************/
 void charDown(Display *display, char key) {
-    char c = key;
-    KeySym sym = XStringToKeysym(&c);
+    KeySym sym = XStringToKeysym(&key);
     KeyCode keycode = XKeysymToKeycode(display, sym);
-    keyDown(display, (unsigned) keycode);
+    keyDown(display, keycode);
 }
 
 /* go to home screen */
 /*********************/
 void goHome() {
-    pid_t pid;
-    pid = fork();
-    if (pid == 0) {
-	system("killall chromium");
-	system("chromium --start-fullscreen /home/cadu/StreamCenter/welcome.html");
-	exit(0);
-    }
-}
-
-/* adjust system volume */
-/**********************/
-void adjustVolume(int value) {
-    pid_t pid;
-    pid = fork();
-    if (pid == 0) { 
-	char buf[22];
-	snprintf(buf, 22, "pulseaudio-ctl set %d", value);
-    	system(buf);
-    }
-}
-
-/* turn off your machine */
-/************************/
-void powerOff() {
-    pid_t pid;
-    pid = fork();
-    if (pid == 0) {
-    	system("poweroff");
-	exit(0);
-    }
+    system("killall chromium");
+    system("chromium --start-fullscreen www.uol.com.br");
 }
 
 /* interpret remote command*/
@@ -223,11 +197,5 @@ int interpretCommand(char *input) {
         return KEYDOWN_C;
     if ( strcasecmp(input, "hom") == 0)
 	return HOME_C;
-    if ( strcasecmp(input, "vol") == 0)
-	return VOLUME_C;
-    if ( strcasecmp(input, "pwr") == 0)
-	return POWEROFF;
-    if ( strcasecmp(input, "ack") == 0)
-	return ACK;
     return UNKNOWN_C;
 }

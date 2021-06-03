@@ -66,9 +66,7 @@ public class Client implements Runnable {
                                     serverAddress, serverPort);
                             clientSock.send(packet);
                             if (ACK) {
-                                System.out.println("RECEBENDO_ACK");
                                 clientSock.receive(packet);
-                                System.out.println("ACK_RECEBIDO");
                                 synced = true;
                                 MainActivity.setStatus();
                             }
@@ -118,12 +116,21 @@ public class Client implements Runnable {
     }
 
     public void startTimer() {
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                sendMessage("ack\n");
-            }
-        }, 0, 20*1000);
+        if (timer != null) {
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    sendMessage("ack\n");
+                }
+            }, 0, 3 * 1000);
+        }
+    }
+
+    public void stopTimer() {
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
     }
 
 }

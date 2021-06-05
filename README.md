@@ -31,7 +31,7 @@ gcc server_udp.c -lX11 -lXtst -lxdo -o server
 ```
 Install the pre-built [apk](https://github.com/elmadjian/YARC/releases) package (or build one yourself) on you connected Android device:
 ```
-adb install yarc.apk
+adb install -t yarc.apk
 ```
 
 ## Running
@@ -47,13 +47,11 @@ If you intend to use the power button, your motherboard must support [Wake-on-La
 
 ## FAQ
 * **What does YARC stand for?**
-**Y**et **A**nother **R**emote **C**ontrol. Yep, nothing of that 'GNUish' recursive acronym gibberish. Just plain and shocking honesty.
+**Y**et **A**nother **R**emote **C**ontrol. Just plain and shocking honesty.
 
 * **Could you please add more features or fix a particular bug?**
-Short answer: no. Long answer: I only started this project because I couldn't find a decent app in Google Play Store that fully satisfied my needs. I don't intend to give support or add more features. I'm just putting it online because some people requested. This code was done in such a hurried and careless way that it is actually complimentary that you are seriously considering it.
+Short answer: no. Long answer: I only started this project because I couldn't find a decent app in Google Play Store to attend my needs. I don't intend to provide long term support or add more features. But you are free to tinker with it.
 
-* **I'm a developer. Can I improve or add some features to your project?**
-Sure, why not? But, really, you shouldn't bother...
+* **Can I improve or add some features to your project?**
+Sure, why not?
 
-* **Something went really bad when I tried to install / run your software. What should I do?**
-You should read the license agreement (items 15 and 16, in particular).

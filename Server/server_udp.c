@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <xdo.h>
 
 #define MOVE_C 1
 #define LMOUSEDOWN_C 2
@@ -22,6 +23,7 @@
 #define VOLUME_C 11
 #define POWEROFF 12
 #define ACK 13
+#define GOBACK_C 14
 #define UNKNOWN_C -1
 #define BUFFSIZE 24
 
@@ -31,11 +33,12 @@ void getCoords(Display*, int*, int*);
 void click(Display*, int);
 void mouseDown(Display*, int);
 void mouseUp(Display*, int);
-void charDown(Display *, char);
+void charDown(xdo_t*, char*);
 void keyDown(Display*, unsigned);
 void goHome();
 void adjustVolume(int);
 void powerOff();
+void goBack(xdo_t*);
 int interpretCommand(char*);
 
 
@@ -43,13 +46,14 @@ int interpretCommand(char*);
 /* main program */
 /***************/
 int main() {
+    xdo_t *xdo = xdo_new(NULL);
     int x, y;
-    int server_fd, client_fd;
+    int server_fd;
     int optval, read;
     struct sockaddr_in server, client;
     char buff[BUFFSIZE];
     char command[3];
-    char key;
+    char* key;
     char ack[BUFFSIZE] = "ack\n";
 
     /*open display*/
@@ -93,7 +97,7 @@ int main() {
             break;
         }
         /*printf("server received %d bytes: %s\n", read, buff);*/
-        sscanf(buff, "%s %c %d %d", command, &key, &x, &y);
+        sscanf(buff, "%s %s %d %d", command, key, &x, &y);
         switch (interpretCommand(command)) {
             case MOVE_C:        move(display, x, y); break;
             case LMOUSEDOWN_C:  mouseDown(display, Button1); break;
@@ -102,9 +106,10 @@ int main() {
             case RMOUSECLICK_C: click(display, Button3); break;
             case SCROLLUP_C:    click(display, Button5); break;
             case SCROLLDOWN_C:  click(display, Button4); break;
-            case CHARDOWN_C:    charDown(display, key); break;
+            case CHARDOWN_C:    charDown(xdo, key); break;
             case KEYDOWN_C:     keyDown(display, (unsigned) x); break;
 	        case HOME_C:        goHome(); break;
+            case GOBACK_C:      goBack(xdo); break;
             case VOLUME_C:      adjustVolume(x); break;
 	        case POWEROFF:      powerOff(); break;
 	        case ACK:           sendto(server_fd, ack, BUFFSIZE, 0, 
@@ -158,11 +163,10 @@ void keyDown(Display *display, unsigned keycode) {
 
 /* simulates a string input */
 /****************************/
-void charDown(Display *display, char key) {
-    char c = key;
-    KeySym sym = XStringToKeysym(&c);
-    KeyCode keycode = XKeysymToKeycode(display, sym);
-    keyDown(display, (unsigned) keycode);
+void charDown(xdo_t* xdo, char* key) {
+    //char* c = malloc(sizeof(char));
+    //c = key;
+    xdo_enter_text_window(xdo, CURRENTWINDOW, key, 0);
 }
 
 /* go to home screen */
@@ -200,6 +204,12 @@ void powerOff() {
     }
 }
 
+/*Go back in the browser*/
+/************************/
+void goBack(xdo_t* xdo) {
+    xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Alt_R+Left", 0);
+}
+
 /* interpret remote command*/
 /***************************/
 int interpretCommand(char *input) {
@@ -222,12 +232,14 @@ int interpretCommand(char *input) {
     if ( strcasecmp(input, "key") == 0)
         return KEYDOWN_C;
     if ( strcasecmp(input, "hom") == 0)
-	return HOME_C;
+	    return HOME_C;
     if ( strcasecmp(input, "vol") == 0)
-	return VOLUME_C;
+    	return VOLUME_C;
     if ( strcasecmp(input, "pwr") == 0)
-	return POWEROFF;
+    	return POWEROFF;
     if ( strcasecmp(input, "ack") == 0)
-	return ACK;
+	    return ACK;
+    if ( strcasecmp(input, "gbk") == 0)
+        return GOBACK_C;
     return UNKNOWN_C;
 }

@@ -10,6 +10,7 @@ The YARC Remote Control has the following features:
 * tap selection
 * left-button hold / selection
 * right-button hold / selection
+* "go back" button for browsing
 * key input from Android keyboard
 * home button (for [StreamCenter](https://github.com/elmadjian/StreamCenter))
 * volume control based on pulseaudio-ctl
@@ -19,13 +20,14 @@ The YARC Remote Control has the following features:
 ## Installing
 Make sure you have the following in your system:
 * libxtst
+* xdotool
 * Android SDK
 * Android platform and build tools
 * PulseAudio
 
 Now compile the `mouse_server_udp.c` file:
 ```
-gcc mouse_server_udp.c -lX11 -lXtst -o server
+gcc server_udp.c -lX11 -lXtst -lxdo -o server
 ```
 Install the pre-built [apk](https://github.com/elmadjian/YARC/releases) package (or build one yourself) on you connected Android device:
 ```

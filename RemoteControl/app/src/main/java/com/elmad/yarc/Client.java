@@ -122,7 +122,7 @@ public class Client implements Runnable {
                 public void run() {
                     sendMessage("ack\n");
                 }
-            }, 0, 3 * 1000);
+            }, 0, 5 * 1000);
         }
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.os.Debug;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -156,6 +158,16 @@ public class MainActivity extends AppCompatActivity {
                 client.sendMessage("vol _ " + progress + "\n");
             }
         });
+
+        //GOBACK BUTTON
+        ImageButton goBackButton =  (ImageButton) findViewById(R.id.goback_btn);
+        goBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (client != null)
+                    client.sendMessage("gbk\n");
+            }
+        });
     }
 
 
@@ -223,16 +235,12 @@ public class MainActivity extends AppCompatActivity {
                 client.sendMessage("chr " + key + "\n");
             }
             else {
-
                 //special cases!
                 int key = event.getKeyCode();
                 switch(key) {
-                    case 55: client.sendMessage("key _ " + 59 + "\n"); break; //,
-                    case 56: client.sendMessage("key _ " + 60 + "\n"); break; //.
                     case 62: client.sendMessage("key _ " + 65 + "\n"); break; //SPACE
                     case 66: client.sendMessage("key _ " + 36 + "\n"); break; //ENTER
                     case 67: client.sendMessage("key _ " + 22 + "\n"); break; //BACKSPACE
-                    case 76: client.sendMessage("key _ " + 97 + "\n"); break; ///
                 }
             }
         }

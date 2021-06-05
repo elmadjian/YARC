@@ -171,8 +171,8 @@ void goHome() {
     pid_t pid;
     pid = fork();
     if (pid == 0) {
-	system("killall chromium");
-	system("chromium --start-fullscreen /home/cadu/StreamCenter/welcome.html");
+	system("killall brave");
+	system("brave --kiosk /home/cadu/StreamCenter/welcome.html");
 	exit(0);
     }
 }

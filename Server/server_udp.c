@@ -53,7 +53,7 @@ int main() {
     struct sockaddr_in server, client;
     char buff[BUFFSIZE];
     char command[3];
-    char* key;
+    char key[2];
     char ack[BUFFSIZE] = "ack\n";
 
     /*open display*/

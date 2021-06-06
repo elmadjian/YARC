@@ -168,6 +168,9 @@ public class MainActivity extends AppCompatActivity {
                     client.sendMessage("gbk\n");
             }
         });
+
+        //ACK TIMER
+        client.startTimer();
     }
 
 
@@ -245,19 +248,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //ACK TIMER
-        client.startTimer();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        client.stopTimer();
     }
 
     public static void connect() {

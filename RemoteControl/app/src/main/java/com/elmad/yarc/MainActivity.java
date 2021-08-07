@@ -170,7 +170,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //ACK TIMER
-        client.startTimer();
+        if (client != null)
+            client.startTimer();
     }
 
 
